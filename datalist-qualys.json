@@ -1,0 +1,10 @@
+{
+      "name": "datalist-qualys",
+      "type": "ip",
+      "records": [
+        {
+          "name": "64.39.96.0/20",
+          "data": ""
+        }
+      ]
+    }
