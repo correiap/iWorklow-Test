@@ -1,9 +1,9 @@
 {
-      "name": "datalist-qualys",
+      "name": "datalist-test",
       "type": "ip",
       "records": [
         {
-          "name": "64.39.96.0/20",
+          "name": "8.8.8.0/24",
           "data": ""
         }
       ]
