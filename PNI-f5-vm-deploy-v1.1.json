@@ -429,7 +429,9 @@
         "group": "[parameters('tagValues').group]",
         "owner": "[parameters('tagValues').owner]",
         "uuid": "na",
-        "connectorid": "na"
+        "connectorid": "na",
+        "DataGroup": "False",
+        "HTTPProfile": "False"
       },
       "type": "Microsoft.Compute/virtualMachines"
     },
