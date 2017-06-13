@@ -276,10 +276,10 @@
       },
       "location": "[variables('location')]",
 
-      "name": "[concat(variables('publicIPAddressName'),'0',copyindex(parameters('indexCopy')))]",
+      "name": "[concat(variables('publicIPAddressName'),copyindex(parameters('indexCopy')))]",
       "properties": {
         "dnsSettings": {
-          "domainNameLabel": "[concat(variables('dnsLabel'),'0',copyindex(parameters('indexCopy')))]"
+          "domainNameLabel": "[concat(variables('dnsLabel'),copyindex(parameters('indexCopy')))]"
         },
         "idleTimeoutInMinutes": 30,
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]"
@@ -301,19 +301,19 @@
         "name": "niccopy"
       },
       "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'),'0', copyindex(parameters('indexCopy')))]",
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'), copyindex(parameters('indexCopy')))]",
         "Microsoft.Resources/deployments/vnet-template"
 
       ],
       "location": "[variables('location')]",
-      "name": "[concat(variables('nicName'),'0',copyindex(parameters('indexCopy')))]",
+      "name": "[concat(variables('nicName'),copyindex(parameters('indexCopy')))]",
       "properties": {
         "ipConfigurations": [
           {
             "name": "ipconfig1",
             "properties": {
               "publicIpAddress": {
-                "id": "[concat(resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName')),'0',copyindex(parameters('indexCopy')))]"
+                "id": "[concat(resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName')),copyindex(parameters('indexCopy')))]"
 
               },
               "privateIPAllocationMethod": "Dynamic",
@@ -369,12 +369,12 @@
         "name": "devicecopy"
       },
       "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'),'0', copyindex(parameters('indexCopy')))]",
+        "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'), copyindex(parameters('indexCopy')))]",
         "[concat('Microsoft.Compute/availabilitySets/', variables('availabilitySetName'))]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('newStorageAccountName'))]"
       ],
       "location": "[variables('location')]",
-      "name": "[concat(variables('deviceNamePrefix'),'0',copyindex(parameters('indexCopy')))]",
+      "name": "[concat(variables('deviceNamePrefix'),copyindex(parameters('indexCopy')))]",
       "plan": {
         "name": "[variables('skuToUse')]",
         "product": "[variables('offerToUse')]",
@@ -396,14 +396,14 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[concat(resourceId('Microsoft.Network/networkInterfaces',variables('nicName')),'0',copyindex(parameters('indexCopy')))]"
+              "id": "[concat(resourceId('Microsoft.Network/networkInterfaces',variables('nicName')),copyindex(parameters('indexCopy')))]"
             }
           ]
         },
         "osProfile": {
           "adminPassword": "[parameters('adminPassword')]",
           "adminUsername": "[parameters('adminUsername')]",
-          "computerName": "[concat(variables('deviceNamePrefix'),'0',copyindex(parameters('indexCopy')))]"
+          "computerName": "[concat(variables('deviceNamePrefix'),copyindex(parameters('indexCopy')))]"
         },
         "storageProfile": {
           "imageReference": {
@@ -415,9 +415,9 @@
           "osDisk": {
             "caching": "ReadWrite",
             "createOption": "FromImage",
-            "name": "[concat(variables('dnsLabel'),'os','0',copyindex(parameters('indexCopy')))]",
+            "name": "[concat(variables('dnsLabel'),'os',copyindex(parameters('indexCopy')))]",
             "vhd": {
-              "uri": "[concat('http://',variables('newStorageAccountName'),'.blob.core.windows.net/',variables('newStorageAccountName'),'/osDisk','0',copyindex(parameters('indexCopy')),'.vhd')]"
+              "uri": "[concat('http://',variables('newStorageAccountName'),'.blob.core.windows.net/',variables('newStorageAccountName'),'/osDisk',copyindex(parameters('indexCopy')),'.vhd')]"
             }
           }
         }
@@ -440,13 +440,13 @@
         "name": "vmextensioncopy"
       },
       "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/',variables('deviceNamePrefix'),'0',copyindex(parameters('indexCopy')))]"
+        "[concat('Microsoft.Compute/virtualMachines/',variables('deviceNamePrefix'),copyindex(parameters('indexCopy')))]"
       ],
       "location": "[variables('location')]",
-      "name": "[concat(variables('deviceNamePrefix'),'0',copyindex(parameters('indexCopy')),'/start')]",
+      "name": "[concat(variables('deviceNamePrefix'),copyindex(parameters('indexCopy')),'/start')]",
       "properties": {
         "protectedSettings": {
-          "commandToExecute": "[concat('mkdir /config/cloud && cp f5-cloud-libs.tar.gz* /config/cloud; /usr/bin/install -b -m 755 /dev/null /config/verifyHash; /usr/bin/install -b -m 755 /dev/null /config/installCloudLibs.sh; /usr/bin/install -b -m 400 /dev/null /config/cloud/passwd; IFS=', variables('singleQuote'), '%', variables('singleQuote'), '; echo -e ', variables('verifyHash'), ' >> /config/verifyHash; echo -e ', variables('installCloudLibs'), ' >> /config/installCloudLibs.sh; echo ', variables('singleQuote'), parameters('adminPassword'), variables('singleQuote'), ' >> /config/cloud/passwd; unset IFS; bash /config/installCloudLibs.sh; /usr/bin/f5-rest-node /config/cloud/f5-cloud-libs/scripts/onboard.js --output /var/log/onboard.log --log-level debug --host ', reference(concat(variables('nicName'),'0', copyindex(parameters('indexCopy')))).ipConfigurations[0].properties.privateIPAddress, ' --port ', variables('bigIpMgmtPort'), ' -u admin --password-url file:///config/cloud/passwd --hostname ', concat(variables('deviceNamePrefix'),'0',copyindex(parameters('indexCopy')), '.', parameters('domainName')), ' --license ', parameters(concat('licenseKey',copyindex(parameters('indexCopy')))), ' --ntp pool.ntp.org --db provision.1nicautoconfig:disable --db tmm.maxremoteloglength:2048 --module ltm:nominal --module asm:none --module afm:none; /usr/bin/f5-rest-node /config/cloud/f5-cloud-libs/scripts/cluster.js --output /var/log/cluster.log --log-level debug --host ', reference(concat(variables('nicName'),'0', copyindex(parameters('indexCopy')))).ipConfigurations[0].properties.privateIPAddress, ' --port ', variables('bigIpMgmtPort'), ' -u admin --password-url file:///config/cloud/passwd --config-sync-ip ', reference(concat(variables('nicName'),'0', copyindex(parameters('indexCopy')))).ipConfigurations[0].properties.privateIPAddress, ' --create-group --device-group Sync --sync-type sync-failover --device ', concat(variables('deviceNamePrefix'),'0', copyindex(parameters('indexCopy')), '.', parameters('domainName')), ' --auto-sync --save-on-auto-sync; rm -f /config/cloud/passwd')]"
+          "commandToExecute": "[concat('mkdir /config/cloud && cp f5-cloud-libs.tar.gz* /config/cloud; /usr/bin/install -b -m 755 /dev/null /config/verifyHash; /usr/bin/install -b -m 755 /dev/null /config/installCloudLibs.sh; /usr/bin/install -b -m 400 /dev/null /config/cloud/passwd; IFS=', variables('singleQuote'), '%', variables('singleQuote'), '; echo -e ', variables('verifyHash'), ' >> /config/verifyHash; echo -e ', variables('installCloudLibs'), ' >> /config/installCloudLibs.sh; echo ', variables('singleQuote'), parameters('adminPassword'), variables('singleQuote'), ' >> /config/cloud/passwd; unset IFS; bash /config/installCloudLibs.sh; /usr/bin/f5-rest-node /config/cloud/f5-cloud-libs/scripts/onboard.js --output /var/log/onboard.log --log-level debug --host ', reference(concat(variables('nicName'), copyindex(parameters('indexCopy')))).ipConfigurations[0].properties.privateIPAddress, ' --port ', variables('bigIpMgmtPort'), ' -u admin --password-url file:///config/cloud/passwd --hostname ', concat(variables('deviceNamePrefix'),copyindex(parameters('indexCopy')), '.', parameters('domainName')), ' --license ', parameters(concat('licenseKey',copyindex(parameters('indexCopy')))), ' --ntp pool.ntp.org --db provision.1nicautoconfig:disable --db tmm.maxremoteloglength:2048 --module ltm:nominal --module asm:none --module afm:none; /usr/bin/f5-rest-node /config/cloud/f5-cloud-libs/scripts/cluster.js --output /var/log/cluster.log --log-level debug --host ', reference(concat(variables('nicName'), copyindex(parameters('indexCopy')))).ipConfigurations[0].properties.privateIPAddress, ' --port ', variables('bigIpMgmtPort'), ' -u admin --password-url file:///config/cloud/passwd --config-sync-ip ', reference(concat(variables('nicName'), copyindex(parameters('indexCopy')))).ipConfigurations[0].properties.privateIPAddress, ' --create-group --device-group Sync --sync-type sync-failover --device ', concat(variables('deviceNamePrefix'), copyindex(parameters('indexCopy')), '.', parameters('domainName')), ' --auto-sync --save-on-auto-sync; rm -f /config/cloud/passwd')]"
         },
         "publisher": "Microsoft.Azure.Extensions",
         "settings": {
