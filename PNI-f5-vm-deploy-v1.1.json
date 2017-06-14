@@ -235,7 +235,7 @@
     "offerToUse": "f5-big-ip",
     "bigIpNicPortValue": "[variables('bigIpNicPortMap')['1'].Port]",
     "bigIpMgmtPort": "[variables('bigIpVersionPortMap')[variables('bigIpNicPortValue')].Port]",
-    "availabilitySetName": "[concat(variables('dnsLabel'), 'av')]",
+    "availabilitySetName": "[concat(variables('dnsLabel'), 'af')]",
     "nicName": "[concat(variables('dnsLabel'), 'nc')]",
     "publicIPAddressName": "[concat(variables('dnsLabel'), 'vx')]",
     "publicIPAddressId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]",
