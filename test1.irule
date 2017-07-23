@@ -1,5 +1,5 @@
 when HTTP_REQUEST {
 
-    HTTP::respond 200 content "<html><head>TEST</head><body>TEST</body></html>"
+    HTTP::respond 200 content "<html><head>Azure</head><body> iWorkflow TEST</body></html>"
 
 }
